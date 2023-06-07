@@ -1,0 +1,161 @@
+      \c postgres
+      DROP DATABASE cleansmile;
+      CREATE DATABASE cleansmile;
+      \c cleansmile
+      /*Tabla client*/
+      CREATE TABLE IF NOT EXISTS client
+      (
+            id SERIAL PRIMARY KEY,
+            name VARCHAR (255) NOT NULL,
+            last_name VARCHAR (255) NOT NULL,
+            email VARCHAR (255) NOT NULL,
+            phone VARCHAR (15) NOT NULL,
+            address VARCHAR (255) NOT NULL,
+            password VARCHAR (50) NOT NULL,
+            condition VARCHAR (15) NOT NULL DEFAULT 'active',
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, 
+            updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            deleted_at BOOLEAN NOT NULL DEFAULT false
+      );
+
+      /*Creacion de trigger para colocar fecha de actualizacion de transport*/
+      BEGIN;
+      CREATE OR REPLACE FUNCTION update_timestamp_client()
+      RETURNS TRIGGER AS $$
+      BEGIN
+            NEW.updated_at= now();
+            RETURN NEW;
+      END;
+      $$ language 'plpgsql';
+      COMMIT;
+      CREATE TRIGGER post_timestamp BEFORE INSERT OR UPDATE ON client
+      FOR EACH ROW EXECUTE PROCEDURE update_timestamp_client();
+      COMMIT;
+
+      CREATE TABLE IF NOT EXISTS 8
+      (
+            id SERIAL PRIMARY KEY,
+            name VARCHAR (255) NOT NULL,
+            last_name VARCHAR (255) NOT NULL,
+            email VARCHAR (255) NOT NULL,
+            phone VARCHAR (255) NOT NULL,
+            address VARCHAR (255),
+            img VARCHAR(255),
+            password VARCHAR (50) NOT NULL,
+            condition VARCHAR (15) NOT NULL DEFAULT 'active',
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, 
+            updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            deleted_at BOOLEAN NOT NULL DEFAULT false
+      );
+
+      /*Creacion de trigger para colocar fecha de actualizacion de client*/
+      BEGIN;
+      CREATE OR REPLACE FUNCTION update_timestamp_client()
+      RETURNS TRIGGER AS $$
+      BEGIN
+            NEW.updated_at= now();
+            RETURN NEW;
+      END;
+      $$ language 'plpgsql';
+      COMMIT;
+      CREATE TRIGGER post_timestamp BEFORE INSERT OR UPDATE ON aclient
+      FOR EACH ROW EXECUTE PROCEDURE update_timestamp_client();
+      COMMIT;
+
+      /*Tabla professional*/
+      CREATE TABLE IF NOT EXISTS proffesional(
+            id SERIAL PRIMARY KEY,
+            name VARCHAR (255) NOT NULL,
+            last_name VARCHAR (255) NOT NULL,
+            email VARCHAR (255) NOT NULL,
+            phone VARCHAR (255) NOT NULL,
+            address VARCHAR (255),
+            img VARCHAR(255),
+            password VARCHAR (50) NOT NULL,
+            condition VARCHAR (15) NOT NULL DEFAULT 'active',
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, 
+            updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            deleted_at BOOLEAN NOT NULL DEFAULT false
+      FOREIGN KEY ("proffesional_id")
+      REFERENCES "proffesional"("id")
+      );
+      /*Creacion de trigger para colocar fecha de actualizacion de proffesional*/
+      BEGIN;
+      CREATE OR REPLACE FUNCTION update_timestamp_proffesional()
+      RETURNS TRIGGER AS $$
+      BEGIN
+            NEW.updated_at= now();
+            RETURN NEW;
+      END;
+      $$ language 'plpgsql';
+      COMMIT;
+      CREATE TRIGGER post_timestamp BEFORE INSERT OR UPDATE ON proffesional
+      FOR EACH ROW EXECUTE PROCEDURE update_timestamp_proffesional();
+      COMMIT;
+
+
+      /*Tabla service */
+      CREATE TABLE IF NOT EXISTS service(
+            id SERIAL PRIMARY KEY,
+            proffesional_id INTEGER,
+            client_id INTEGER,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, 
+            updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            deleted_at BOOLEAN NOT NULL DEFAULT false,
+      FOREIGN KEY ("proffesional_id")
+      REFERENCES "proffesional"("id")
+      );
+
+      /*Creacion de trigger para colocar fecha de actualizacion de service*/
+      BEGIN;
+      CREATE OR REPLACE FUNCTION update_timestamp_service()
+      RETURNS TRIGGER AS $$
+      BEGIN
+            NEW.updated_at= now();
+            RETURN NEW;
+      END;
+      $$ language 'plpgsql';
+      COMMIT;
+      CREATE TRIGGER post_timestamp BEFORE INSERT OR UPDATE ON service
+      FOR EACH ROW EXECUTE PROCEDURE update_timestamp_service();
+      COMMIT;
+
+
+      /*Tabla Shipping*/
+      CREATE TABLE IF NOT EXISTS shipping(
+            id SERIAL PRIMARY KEY,
+            service_id INTEGER,
+            proffesional_id INTEGER,
+            client_id INTEGER,
+            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, 
+            updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            deleted_at BOOLEAN NOT NULL DEFAULT false,
+      FOREIGN KEY ("service_id")
+      REFERENCES "service"("id"),
+      FOREIGN KEY ("client_id")
+      REFERENCES "client"("id")
+      );
+      /*Creacion de trigger para colocar fecha de actualizacion de Shipping*/
+      BEGIN;
+      CREATE OR REPLACE FUNCTION update_timestamp_shipping()
+      RETURNS TRIGGER AS $$
+      BEGIN
+            NEW.updated_at= now();
+            RETURN NEW;
+      END;
+      $$ language 'plpgsql';
+      COMMIT;
+      CREATE TRIGGER post_timestamp BEFORE INSERT OR UPDATE ON shipping
+      FOR EACH ROW EXECUTE PROCEDURE update_timestamp_shipping();
+      COMMIT;
+
+
+      INSERT INTO client (name,
+            last_name,
+            email,
+            phone,
+            address,
+            img,
+            password)
+      VALUES('Oscar','Acevedo','oacevedo@gmail.com','00000','casa', 'urls/img', '12345');      
+      
